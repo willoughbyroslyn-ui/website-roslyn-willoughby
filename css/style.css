@@ -3,7 +3,13 @@
    "how to change link color." */
 
 body {
-  background-color: white;
-  color: black;
-  font-family: Verdana;
+    background-color: white;
+    color: black;
+    font-family: Verdana;
+}
+
+@media (min-width: 768px) {
+    body {
+        background-color: lavender;
+    }
 }
