@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SITE — Sustainable Infrastructure Trade-Off Evaluation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0e1419;
+    --surface2: #141c24;
+    --border: #1e2d3d;
+    --border2: #243447;
+    --text: #c8d8e8;
+    --text-dim: #5a7a94;
+    --text-bright: #e8f4ff;
+    --accent: #00d4aa;
+    --accent2: #0096ff;
+    --warn: #ffb347;
+    --danger: #ff4d6d;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 48px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(26px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 15px;
+    font-weight: 300;
+    max-width: 560px;
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 780px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* PANELS */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 14px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(0,212,170,0.1);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 2px;
+    padding: 2px 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-bright);
+    text-transform: uppercase;
+  }
+
+  .panel-body {
+    padding: 20px;
+  }
+
+  /* FORM ELEMENTS */
+  .field {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  select, input[type="range"] {
+    width: 100%;
+  }
+
+  select {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text-bright);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a7a94' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  select:hover { border-color: var(--accent); }
+  select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,212,170,0.1); }
+  select option { background: #141c24; }
+
+  .range-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 2px;
+    flex: 1;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 6px rgba(0,212,170,0.4);
+  }
+
+  .range-val {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    min-width: 52px;
+    text-align: right;
+  }
+
+  /* RADIO TOGGLE */
+  .toggle-group {
+    display: flex;
+    gap: 2px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 3px;
+  }
+  .toggle-group input { display: none; }
+  .toggle-group label {
+    flex: 1;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .toggle-group input:checked + label {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* RUN BUTTON */
+  .run-btn {
+    width: 100%;
+    margin-top: 4px;
+    padding: 13px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .run-btn:hover {
+    background: #00ffe6;
+    box-shadow: 0 0 24px rgba(0,212,170,0.3);
+  }
+  .run-btn:active { transform: scale(0.99); }
+
+  /* OUTPUT PANEL */
+  .output-panel {
+    grid-column: 1 / -1;
+    display: none;
+  }
+  .output-panel.visible { display: block; }
+
+  /* FEASIBILITY ROW */
+  .feasibility-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 600px) {
+    .feasibility-row { grid-template-columns: 1fr; }
+  }
+
+  .constraint-card {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .constraint-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .constraint-card.pass::before { background: var(--accent); }
+  .constraint-card.warn::before { background: var(--warn); }
+  .constraint-card.fail::before { background: var(--danger); }
+
+  .constraint-name {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .constraint-status {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pass .constraint-status { color: var(--accent); }
+  .warn .constraint-status { color: var(--warn); }
+  .fail .constraint-status { color: var(--danger); }
+
+  .constraint-detail {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* INFEASIBLE BANNER */
+  .infeasible-banner {
+    background: rgba(255,77,109,0.08);
+    border: 1px solid rgba(255,77,109,0.3);
+    border-radius: 3px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--danger);
+    letter-spacing: 0.05em;
+    margin-bottom: 24px;
+    display: none;
+  }
+  .infeasible-banner.visible { display: block; }
+
+  /* OBJECTIVES */
+  .objectives-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 600px) {
+    .objectives-grid { grid-template-columns: 1fr; }
+  }
+
+  .objective-card {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 16px;
+  }
+
+  .obj-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .obj-name {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .obj-score {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .obj-bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .obj-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .obj-detail {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* PARETO / RISK SCORE */
+  .risk-row {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+  }
+  @media (max-width: 700px) {
+    .risk-row { grid-template-columns: 1fr; }
+  }
+
+  .risk-card {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 18px;
+  }
+
+  .risk-score-display {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+
+  .risk-number {
+    font-family: var(--mono);
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .risk-label-stack { display: flex; flex-direction: column; gap: 4px; }
+  .risk-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .risk-verdict {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .risk-summary {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .radar-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  /* PARETO NOTE */
+  .pareto-note {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(0,150,255,0.06);
+    border: 1px solid rgba(0,150,255,0.2);
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .pareto-note strong {
+    color: var(--accent2);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* CAPACITY ENVELOPE */
+  .envelope-bar-wrap {
+    margin-top: 10px;
+  }
+  .envelope-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .envelope-track {
+    height: 12px;
+    background: var(--border);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .envelope-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .envelope-marker {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--warn);
+  }
+  .envelope-marker-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--warn);
+    margin-top: 6px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-tag">Research MVP · Computational Social Science</div>
+    <h1><span>SITE</span> Evaluator</h1>
+    <p class="subtitle">Sustainable Infrastructure Trade-Off Evaluation — estimate region-specific limits for AI data center deployment</p>
+  </header>
+
+  <div class="layout">
+
+    <!-- INPUT PANEL 1: REGION -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-num">01</span>
+        <span class="panel-title">Region Selection</span>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label>US Grid Region / ISO</label>
+          <select id="region">
+            <option value="ercot">ERCOT — Texas</option>
+            <option value="pjm">PJM — Mid-Atlantic / Midwest</option>
+            <option value="wecc_wa">WECC — Pacific Northwest (WA/OR)</option>
+            <option value="wecc_ca">CAISO — California</option>
+            <option value="miso">MISO — Central US</option>
+            <option value="spp">SPP — Great Plains</option>
+            <option value="isone">ISO-NE — New England</option>
+            <option value="nyiso">NYISO — New York</option>
+            <option value="serc">SERC — Southeast</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Climate Zone</label>
+          <select id="climate">
+            <option value="hot_humid">Hot & Humid</option>
+            <option value="hot_dry">Hot & Dry (Arid)</option>
+            <option value="temperate" selected>Temperate</option>
+            <option value="cold">Cold / Northern</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Population Proximity to Site</label>
+          <div class="toggle-group">
+            <input type="radio" name="proximity" id="prox_low" value="low" checked>
+            <label for="prox_low">Rural</label>
+            <input type="radio" name="proximity" id="prox_med" value="medium">
+            <label for="prox_med">Suburban</label>
+            <input type="radio" name="proximity" id="prox_high" value="high">
+            <label for="prox_high">Urban</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INPUT PANEL 2: DATA CENTER CONFIG -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-num">02</span>
+        <span class="panel-title">Data Center Configuration</span>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Planned Power Capacity</label>
+          <div class="range-wrap">
+            <input type="range" id="capacity" min="10" max="1000" step="10" value="200">
+            <span class="range-val" id="capacity-val">200 MW</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Hardware Architecture</label>
+          <div class="toggle-group">
+            <input type="radio" name="hw" id="hw_gpu" value="gpu" checked>
+            <label for="hw_gpu">GPU-Heavy</label>
+            <input type="radio" name="hw" id="hw_cpu" value="cpu">
+            <label for="hw_cpu">CPU-Mixed</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Primary Workload</label>
+          <select id="workload">
+            <option value="training">LLM Training (Large Scale)</option>
+            <option value="inference">Inference / Serving</option>
+            <option value="image_gen">Image Generation</option>
+            <option value="hpc">HPC / Mixed</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cooling System</label>
+          <div class="toggle-group">
+            <input type="radio" name="cooling" id="cool_air" value="air" checked>
+            <label for="cool_air">Air-Cooled</label>
+            <input type="radio" name="cooling" id="cool_liq" value="liquid">
+            <label for="cool_liq">Liquid-Cooled</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Renewable Energy Commitment (%)</label>
+          <div class="range-wrap">
+            <input type="range" id="renewable" min="0" max="100" step="5" value="30">
+            <span class="range-val" id="renewable-val">30%</span>
+          </div>
+        </div>
+        <button class="run-btn" onclick="runSITE()">▶ Run SITE Evaluation</button>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="panel output-panel" id="output">
+      <div class="panel-header">
+        <span class="panel-num">03</span>
+        <span class="panel-title">Evaluation Results</span>
+        <span id="region-label" style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-dim);"></span>
+      </div>
+      <div class="panel-body">
+
+        <div class="infeasible-banner" id="infeasible-banner">
+          ⚠ INFEASIBLE CONFIGURATION — One or more hard constraints violated. This deployment scale cannot proceed in the selected region without remediation.
+        </div>
+
+        <!-- Hard Constraints -->
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.15em;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;">Stage 1 — Hard Constraint Evaluation</div>
+        <div class="feasibility-row" id="constraints"></div>
+
+        <!-- Objectives -->
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.15em;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;">Stage 2 — Multi-Objective Trade-Off Analysis</div>
+        <div class="objectives-grid" id="objectives"></div>
+
+        <!-- Risk Score + Radar -->
+        <div class="risk-row">
+          <div class="risk-card">
+            <div class="risk-score-display">
+              <div class="risk-number" id="risk-number">--</div>
+              <div class="risk-label-stack">
+                <span class="risk-label">SITE Risk Score / 100</span>
+                <span class="risk-verdict" id="risk-verdict">—</span>
+              </div>
+            </div>
+            <div class="risk-summary" id="risk-summary"></div>
+
+            <!-- Capacity Envelope -->
+            <div class="envelope-bar-wrap" id="envelope-wrap">
+              <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.15em;color:var(--text-dim);text-transform:uppercase;margin:14px 0 6px;">Sustainable Capacity Envelope</div>
+              <div class="envelope-label-row">
+                <span>0 MW</span>
+                <span id="envelope-max-label">1000 MW</span>
+              </div>
+              <div class="envelope-track">
+                <div class="envelope-fill" id="envelope-fill"></div>
+                <div class="envelope-marker" id="envelope-marker"></div>
+              </div>
+              <div class="envelope-marker-label" id="envelope-marker-label"></div>
+            </div>
+
+            <div class="pareto-note" id="pareto-note"></div>
+          </div>
+
+          <div class="risk-card radar-wrap">
+            <svg id="radar-svg" width="220" height="220" viewBox="0 0 220 220"></svg>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── REGIONAL DATA ────────────────────────────────────────────────────────────
+const REGIONS = {
+  ercot:   { name:'ERCOT — Texas',           gridCapacity:85, carbonIntensity:0.42, waterStress:0.72, reliability:0.78, label:'ERCOT, TX' },
+  pjm:     { name:'PJM — Mid-Atlantic',      gridCapacity:75, carbonIntensity:0.38, waterStress:0.45, reliability:0.87, label:'PJM' },
+  wecc_wa: { name:'WECC — Pacific Northwest', gridCapacity:80, carbonIntensity:0.08, waterStress:0.38, reliability:0.82, label:'WECC/NW' },
+  wecc_ca: { name:'CAISO — California',      gridCapacity:60, carbonIntensity:0.22, waterStress:0.82, reliability:0.74, label:'CAISO' },
+  miso:    { name:'MISO — Central US',       gridCapacity:78, carbonIntensity:0.45, waterStress:0.30, reliability:0.85, label:'MISO' },
+  spp:     { name:'SPP — Great Plains',      gridCapacity:82, carbonIntensity:0.40, waterStress:0.48, reliability:0.81, label:'SPP' },
+  isone:   { name:'ISO-NE — New England',    gridCapacity:55, carbonIntensity:0.20, waterStress:0.22, reliability:0.89, label:'ISO-NE' },
+  nyiso:   { name:'NYISO — New York',        gridCapacity:52, carbonIntensity:0.18, waterStress:0.20, reliability:0.90, label:'NYISO' },
+  serc:    { name:'SERC — Southeast',        gridCapacity:80, carbonIntensity:0.48, waterStress:0.35, reliability:0.83, label:'SERC' },
+};
+
+const CLIMATE = {
+  hot_humid: { coolingMult: 1.6, waterMult: 1.5 },
+  hot_dry:   { coolingMult: 1.7, waterMult: 1.9 },
+  temperate: { coolingMult: 1.0, waterMult: 1.0 },
+  cold:      { coolingMult: 0.6, waterMult: 0.7 },
+};
+
+const WORKLOAD = {
+  training:   { powerMult: 1.3, label: 'LLM Training' },
+  inference:  { powerMult: 0.8, label: 'Inference' },
+  image_gen:  { powerMult: 1.1, label: 'Image Generation' },
+  hpc:        { powerMult: 1.0, label: 'HPC/Mixed' },
+};
+
+// ── SLIDERS ──────────────────────────────────────────────────────────────────
+const capSlider = document.getElementById('capacity');
+const capVal    = document.getElementById('capacity-val');
+capSlider.oninput = () => capVal.textContent = capSlider.value + ' MW';
+
+const renSlider = document.getElementById('renewable');
+const renVal    = document.getElementById('renewable-val');
+renSlider.oninput = () => renVal.textContent = renSlider.value + '%';
+
+// ── MAIN EVALUATION ──────────────────────────────────────────────────────────
+function runSITE() {
+  const region    = REGIONS[document.getElementById('region').value];
+  const climate   = CLIMATE[document.getElementById('climate').value];
+  const workload  = WORKLOAD[document.getElementById('workload').value];
+  const capacity  = +capSlider.value;
+  const renewable = +renSlider.value / 100;
+  const cooling   = document.querySelector('[name=cooling]:checked').value;
+  const hw        = document.querySelector('[name=hw]:checked').value;
+  const proximity = document.querySelector('[name=proximity]:checked').value;
+
+  // Effective power demand adjusted for workload
+  const effectiveMW = capacity * workload.powerMult;
+
+  // ── HARD CONSTRAINTS ─────────────────────────────────────────────────────
+  // Grid headroom: region has gridCapacity score (0–100), scale check
+  const gridHeadroom = region.gridCapacity - (effectiveMW / 12);  // rough mapping
+  const gridOk = gridHeadroom > 0;
+  const gridStatus = gridOk ? (gridHeadroom > 20 ? 'pass' : 'warn') : 'fail';
+
+  // Water stress: higher base stress + climate + cooling type penalty
+  const coolingWaterPenalty = cooling === 'air' ? 0.05 : 0.18;
+  const waterStressEffective = Math.min(1, region.waterStress * climate.waterMult + coolingWaterPenalty * (effectiveMW / 500));
+  const waterOk = waterStressEffective < 0.90;
+  const waterStatus = waterStressEffective < 0.60 ? 'pass' : waterStressEffective < 0.80 ? 'warn' : 'fail';
+
+  // Energy reliability
+  const reliabilityOk = region.reliability > 0.75;
+  const reliabilityStatus = region.reliability > 0.85 ? 'pass' : region.reliability > 0.75 ? 'warn' : 'fail';
+
+  const isFeasible = gridOk && waterOk && reliabilityOk;
+
+  // ── OBJECTIVES ───────────────────────────────────────────────────────────
+  // Carbon: base intensity adjusted by renewable commitment
+  const effectiveCarbon = region.carbonIntensity * (1 - renewable * 0.85);
+  const carbonScore = Math.min(100, Math.round(effectiveCarbon * 200)); // 0=best, 100=worst
+
+  // Water: stress index
+  const waterScore = Math.min(100, Math.round(waterStressEffective * 110));
+
+  // Cooling demand: climate multiplier, liquid cooling is more efficient
+  const coolingEff = cooling === 'liquid' ? 0.7 : 1.0;
+  const pue = (climate.coolingMult * coolingEff * 0.55) + 1.0;  // PUE approx
+  const coolingScore = Math.min(100, Math.round((pue - 1.0) * 140));
+
+  // Community exposure: proximity + scale
+  const proxMap = { low: 0.15, medium: 0.55, high: 0.90 };
+  const exposureScore = Math.min(100, Math.round(proxMap[proximity] * 80 + (effectiveMW / 1000) * 30));
+
+  // ── RISK SCORE ───────────────────────────────────────────────────────────
+  const weights = { carbon: 0.30, water: 0.25, cooling: 0.20, exposure: 0.25 };
+  let riskScore = Math.round(
+    carbonScore   * weights.carbon +
+    waterScore    * weights.water  +
+    coolingScore  * weights.cooling +
+    exposureScore * weights.exposure
+  );
+  if (!isFeasible) riskScore = Math.min(100, riskScore + 25);
+
+  // Sustainable capacity: back-calculate max MW within constraints
+  let sustainableMW = Math.round(capacity * (1 - riskScore / 200) * (isFeasible ? 1.0 : 0.5));
+  sustainableMW = Math.max(10, Math.min(sustainableMW, 900));
+
+  // ── RENDER ───────────────────────────────────────────────────────────────
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('output').className = 'panel output-panel visible';
+  document.getElementById('region-label').textContent = region.label + ' · ' + capacity + ' MW';
+
+  // Infeasible banner
+  const banner = document.getElementById('infeasible-banner');
+  banner.classList.toggle('visible', !isFeasible);
+
+  // Hard constraints
+  document.getElementById('constraints').innerHTML = [
+    {
+      label: 'Grid Capacity',
+      status: gridStatus,
+      verdict: gridStatus === 'pass' ? 'SUFFICIENT' : gridStatus === 'warn' ? 'MARGINAL' : 'EXCEEDED',
+      detail: `Reserve headroom: ${Math.max(0, Math.round(gridHeadroom))} index pts. Region rated ${region.gridCapacity}/100.`
+    },
+    {
+      label: 'Water Availability',
+      status: waterStatus,
+      verdict: waterStatus === 'pass' ? 'LOW STRESS' : waterStatus === 'warn' ? 'MODERATE' : 'HIGH STRESS',
+      detail: `Effective basin stress: ${Math.round(waterStressEffective*100)}%. Threshold: 90%.`
+    },
+    {
+      label: 'Energy Reliability',
+      status: reliabilityStatus,
+      verdict: reliabilityStatus === 'pass' ? 'STABLE' : reliabilityStatus === 'warn' ? 'MARGINAL' : 'AT RISK',
+      detail: `Grid reliability index: ${Math.round(region.reliability*100)}%. Minimum: 75%.`
+    }
+  ].map(c => `
+    <div class="constraint-card ${c.status}">
+      <div class="constraint-name">${c.label}</div>
+      <div class="constraint-status">${c.verdict}</div>
+      <div class="constraint-detail">${c.detail}</div>
+    </div>
+  `).join('');
+
+  // Objectives
+  const objectives = [
+    { name: 'Carbon Emissions', score: carbonScore, detail: `Effective intensity: ${(effectiveCarbon*1000).toFixed(0)} gCO₂/kWh after ${Math.round(renewable*100)}% renewable offset.` },
+    { name: 'Water Consumption', score: waterScore, detail: `Est. basin stress index: ${Math.round(waterStressEffective*100)}%. Cooling type: ${cooling === 'liquid' ? 'Liquid (efficient)' : 'Air (higher evaporation)'}.` },
+    { name: 'Cooling Demand', score: coolingScore, detail: `Estimated PUE: ${pue.toFixed(2)}. Climate multiplier: ×${climate.coolingMult}.` },
+    { name: 'Community Exposure', score: exposureScore, detail: `Proximity: ${proximity}. Scale factor applied to ${workload.label} workload.` },
+  ];
+
+  function scoreColor(s) {
+    if (s < 35) return 'var(--accent)';
+    if (s < 65) return 'var(--warn)';
+    return 'var(--danger)';
+  }
+
+  document.getElementById('objectives').innerHTML = objectives.map(o => `
+    <div class="objective-card">
+      <div class="obj-header">
+        <div class="obj-name">${o.name}</div>
+        <div class="obj-score" style="color:${scoreColor(o.score)}">${o.score}/100</div>
+      </div>
+      <div class="obj-bar-bg">
+        <div class="obj-bar" style="width:${o.score}%;background:${scoreColor(o.score)}"></div>
+      </div>
+      <div class="obj-detail">${o.detail}</div>
+    </div>
+  `).join('');
+
+  // Risk score
+  const riskEl = document.getElementById('risk-number');
+  riskEl.textContent = riskScore;
+  riskEl.style.color = scoreColor(riskScore);
+
+  const verdictMap = [
+    [35, 'LOW RISK — SUSTAINABLE'],
+    [55, 'MODERATE RISK'],
+    [75, 'HIGH RISK'],
+    [101, 'CRITICAL — INFEASIBLE'],
+  ];
+  const verdict = verdictMap.find(([t]) => riskScore < t);
+  const verdictEl = document.getElementById('risk-verdict');
+  verdictEl.textContent = verdict[1];
+  verdictEl.style.color = scoreColor(riskScore);
+
+  // Summary
+  const summaries = [];
+  if (carbonScore > 60) summaries.push('Carbon intensity is a significant concern; increase renewable procurement.');
+  if (waterScore > 60) summaries.push('Water stress is elevated — consider liquid cooling efficiency gains or alternative siting.');
+  if (coolingScore > 60) summaries.push('Cooling load is high; liquid-cooled infrastructure or cooler-climate siting would reduce demand.');
+  if (exposureScore > 60) summaries.push('Community exposure warrants environmental justice review before permitting.');
+  if (isFeasible && riskScore < 40) summaries.push('This configuration appears viable within regional constraints.');
+  document.getElementById('risk-summary').textContent = summaries.join(' ') || 'Evaluate individual objective scores for targeted mitigation.';
+
+  // Capacity envelope bar
+  const maxMW = 1000;
+  const fillPct  = Math.round((sustainableMW / maxMW) * 100);
+  const markerPct = Math.round((capacity / maxMW) * 100);
+  document.getElementById('envelope-fill').style.width = fillPct + '%';
+  document.getElementById('envelope-fill').style.background = scoreColor(riskScore);
+  document.getElementById('envelope-marker').style.left = markerPct + '%';
+  document.getElementById('envelope-marker-label').textContent = `▲ Proposed: ${capacity} MW  |  Est. sustainable ceiling: ~${sustainableMW} MW`;
+  document.getElementById('envelope-max-label').textContent = maxMW + ' MW';
+
+  // Pareto note
+  document.getElementById('pareto-note').innerHTML = `<strong>Pareto Frontier</strong> — No single region dominates across all four objectives. ${region.carbonIntensity < 0.15 ? region.label + ' offers low carbon intensity but may face grid or water constraints at this scale.' : region.waterStress < 0.35 ? region.label + ' has favorable water availability; carbon intensity is the primary trade-off.' : 'Trade-offs between carbon, water, and community exposure require explicit governance decisions.'}`;
+
+  // Radar chart
+  drawRadar([carbonScore, waterScore, coolingScore, exposureScore, Math.round(region.reliability * 100)],
+    ['Carbon', 'Water', 'Cooling', 'Exposure', 'Reliability']);
+
+  // Smooth scroll
+  setTimeout(() => document.getElementById('output').scrollIntoView({ behavior:'smooth', block:'start' }), 50);
+}
+
+// ── RADAR CHART ──────────────────────────────────────────────────────────────
+function drawRadar(scores, labels) {
+  const svg = document.getElementById('radar-svg');
+  const cx = 110, cy = 110, r = 80;
+  const n = scores.length;
+  const angle = i => (Math.PI * 2 * i / n) - Math.PI / 2;
+
+  function pt(i, radius) {
+    return [cx + radius * Math.cos(angle(i)), cy + radius * Math.sin(angle(i))];
+  }
+
+  // Background rings
+  let html = '';
+  [0.25, 0.5, 0.75, 1].forEach(frac => {
+    const pts = Array.from({length:n}, (_,i) => pt(i, r*frac).join(',')).join(' ');
+    html += `<polygon points="${pts}" fill="none" stroke="rgba(30,45,61,1)" stroke-width="1"/>`;
+  });
+
+  // Axes
+  for (let i = 0; i < n; i++) {
+    const [x,y] = pt(i, r);
+    html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(30,45,61,1.5)" stroke-width="1"/>`;
+  }
+
+  // Data polygon
+  const dataPts = scores.map((s, i) => pt(i, r * (s/100)).join(',')).join(' ');
+  html += `<polygon points="${dataPts}" fill="rgba(0,212,170,0.15)" stroke="var(--accent)" stroke-width="1.5"/>`;
+
+  // Dots
+  scores.forEach((s, i) => {
+    const [x,y] = pt(i, r * (s/100));
+    html += `<circle cx="${x}" cy="${y}" r="3.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.5"/>`;
+  });
+
+  // Labels
+  labels.forEach((lbl, i) => {
+    const [x,y] = pt(i, r + 18);
+    const anchor = x < cx - 5 ? 'end' : x > cx + 5 ? 'start' : 'middle';
+    html += `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="middle" fill="#5a7a94" font-family="Space Mono" font-size="8" letter-spacing="0.05em">${lbl.toUpperCase()}</text>`;
+  });
+
+  svg.innerHTML = html;
+}
+</script>
+</body>
+</html>
