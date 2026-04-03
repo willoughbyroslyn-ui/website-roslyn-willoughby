@@ -1,16 +1,13 @@
 html {
 	font-size: 110%;
 	background: white url("../img/animspace.gif") repeat;
-  }
-  
-  body {
-	color: MidnightBlue;
-	font-family: 'Barlow', serif;
-	font-size: 1.05rem;
-	margin: 0.2rem;
-	min-height: 100vh;
-	padding: 0;
-  }
+}
+
+@media (min-width: 768px) {
+    html {
+        background: lavender;
+    }
+}
   
   body a:link, body a:visited {
 	color: DarkBlue;
