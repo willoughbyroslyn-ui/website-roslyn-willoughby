@@ -61,9 +61,100 @@
 		<h2 id="writing"> Projects </h2>
 		<p align = 'justify'>
 
-			<li><b>Decoding AI Policy: A Computational Analysis of US vs. EU Legislation</b> — NLP analysis across 16 primary policy texts using TF-IDF divergence, topic modeling, and tone scoring, revealing that EU texts carry 3× the rights-based language density while U.S. bills emphasize infrastructure at 5× the rate.</li>
-			<br>
-			<li><b>Cervical Cancer Risk Prediction using Naive Bayes</b> — Built a machine learning classifier to predict cervical cancer risk using real-world clinical data, learning how to handle messy datasets, evaluate model performance, and navigate the challenges of class imbalance in healthcare applications.</li>
+			<h2 id="writing">Projects</h2>
+
+<style>
+  .proj-track { display:flex; gap:16px; overflow-x:auto; padding-bottom:12px; scrollbar-width:none; cursor:grab; user-select:none; }
+  .proj-track::-webkit-scrollbar { display:none; }
+  .proj-track.grabbing { cursor:grabbing; }
+  .proj-card { flex:0 0 260px; background:#fff; border:0.5px solid rgba(0,0,0,0.12); border-radius:12px; padding:1.25rem; transition:border-color 0.15s, transform 0.15s; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+  .proj-card:hover { border-color:rgba(0,0,0,0.25); transform:translateY(-2px); }
+  .proj-tag { display:inline-block; font-size:11px; font-weight:500; padding:3px 8px; border-radius:4px; margin-bottom:12px; align-self:flex-start; }
+  .tag-sql    { background:#E6F1FB; color:#0C447C; }
+  .tag-python { background:#EAF3DE; color:#27500A; }
+  .tag-viz    { background:#FAEEDA; color:#633806; }
+  .tag-ml     { background:#EEEDFE; color:#3C3489; }
+  .tag-cv     { background:#FAECE7; color:#712B13; }
+  .proj-title { font-size:15px; font-weight:500; color:#111; line-height:1.3; margin-bottom:8px; }
+  .proj-desc  { font-size:13px; color:#555; line-height:1.6; margin-bottom:14px; flex:1; }
+  .proj-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; }
+  .proj-chips  { display:flex; gap:6px; flex-wrap:wrap; }
+  .proj-chip   { font-size:11px; color:#777; background:#f4f4f4; padding:2px 7px; border-radius:4px; }
+  .proj-link   { font-size:12px; color:#185FA5; text-decoration:none; display:flex; align-items:center; gap:3px; white-space:nowrap; flex-shrink:0; }
+  .proj-link:hover { opacity:0.75; }
+  .proj-link svg { width:12px; height:12px; }
+  .proj-bar { position:absolute; top:0; left:0; right:0; height:3px; border-radius:12px 12px 0 0; }
+  .bar-sql    { background:#378ADD; }
+  .bar-python { background:#639922; }
+  .bar-viz    { background:#BA7517; }
+  .bar-ml     { background:#7F77DD; }
+  .bar-cv     { background:#D85A30; }
+</style>
+
+<div class="proj-track" id="proj-track">
+
+  <div class="proj-card">
+    <div class="proj-bar bar-sql"></div>
+    <span class="proj-tag tag-sql">SQL · DuckDB</span>
+    <p class="proj-title">Customer Churn &amp; Retention Analysis</p>
+    <p class="proj-desc">SQL-first analysis of 64K customers to identify churn drivers across subscription tiers, contract types, and behavioral signals.</p>
+    <div class="proj-footer">
+      <div class="proj-chips"><span class="proj-chip">DuckDB</span><span class="proj-chip">Python</span><span class="proj-chip">Matplotlib</span></div>
+      <a class="proj-link" href="YOUR_GITHUB_LINK" target="_blank">GitHub <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-bar bar-python"></div>
+    <span class="proj-tag tag-python">Python · ML</span>
+    <p class="proj-title">Cervical Cancer Risk Prediction</p>
+    <p class="proj-desc">End-to-end classification pipeline with feature engineering, cross-validation, and ROC-AUC evaluation on a public health dataset.</p>
+    <div class="proj-footer">
+      <div class="proj-chips"><span class="proj-chip">Sklearn</span><span class="proj-chip">ROC-AUC</span></div>
+      <a class="proj-link" href="YOUR_GITHUB_LINK" target="_blank">GitHub <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-bar bar-viz"></div>
+    <span class="proj-tag tag-viz">Statistics · R</span>
+    <p class="proj-title">US Movie Revenue Case Study</p>
+    <p class="proj-desc">Regression models on 2006 U.S. films — opening theaters and sequel status drive opening revenue; critic scores explain ~80% of total domestic variation.</p>
+    <div class="proj-footer">
+      <div class="proj-chips"><span class="proj-chip">R</span><span class="proj-chip">Regression</span></div>
+      <a class="proj-link" href="YOUR_REPORT_LINK" target="_blank">Report <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L10 2M4 2h6v6"/></svg></a>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-bar bar-ml"></div>
+    <span class="proj-tag tag-ml">ML · LLM</span>
+    <p class="proj-title">Phenomics LLM for Raspberry Breeding</p>
+    <div class="proj-footer">
+      <div class="proj-chips"><span class="proj-chip">LLM</span><span class="proj-chip">CV</span><span class="proj-chip">USDA</span></div>
+    </div>
+  </div>
+
+  <div class="proj-card">
+    <div class="proj-bar bar-cv"></div>
+    <span class="proj-tag tag-cv">Sensors · ML</span>
+    <p class="proj-title">Gerontechnology — Cognitive Decline Detection</p>
+    <div class="proj-footer">
+      <div class="proj-chips"><span class="proj-chip">NIH</span><span class="proj-chip">SQL</span><span class="proj-chip">Wearables</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function(){
+    var t=document.getElementById('proj-track'),isDown=false,startX,scrollLeft;
+    t.addEventListener('mousedown',function(e){isDown=true;t.classList.add('grabbing');startX=e.pageX-t.offsetLeft;scrollLeft=t.scrollLeft;});
+    t.addEventListener('mouseleave',function(){isDown=false;t.classList.remove('grabbing');});
+    t.addEventListener('mouseup',function(){isDown=false;t.classList.remove('grabbing');});
+    t.addEventListener('mousemove',function(e){if(!isDown)return;e.preventDefault();t.scrollLeft=scrollLeft-(e.pageX-t.offsetLeft-startX)*1.2;});
+  })();
+</script>
 		</p>
 		<h2 id="writing"> Research </h2>
 		<p align = 'justify'>
